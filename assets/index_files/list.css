@@ -1,0 +1,46 @@
+.table-listing {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 25% 20% 20% 20% 15%;
+      grid-template-columns: 25% 20% 20% 20% 15%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-bottom: 1px solid #dce1e7;
+  text-transform: lowercase;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.table-listing:last-child {
+  border-bottom: 0;
+}
+
+.table-listing:hover {
+  background-color: #dce1e7;
+}
+
+.table-listing > li {
+  padding: 5px 10px;
+  min-height: 40px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.table-listing > li.date {
+  text-align: center;
+}
+
+.table-listing.table-head {
+  background-color: #231f20;
+  padding: 8px 10px;
+  color: #fff;
+}
+/*# sourceMappingURL=list.css.map */

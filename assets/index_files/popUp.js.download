@@ -1,0 +1,1682 @@
+     /**
+      * Created by Usman Ehsan on 12/8/13.
+      * Author Usman Ehsan
+      * Company EuroMax Computers LLC
+      * asdf
+      */
+
+     (function($){
+         
+          $.popUp={
+               
+
+               siteUrl:'https://www.staging.chaaby.com',
+               
+               ImgsiteUrl:'https://www.img.chaaby.com',
+         
+         
+               socket_server : 'https://www.chaaby.com:3000',
+               
+               j_interval :'',
+               
+               loader_show : function (){
+		jQuery('.loader-wrap').addClass('open');
+                },
+                loader_hide : function (){
+                        jQuery('.loader-wrap').removeClass('open');
+                },
+
+               AnimateLoading:function(div_id,type){
+
+                    if(div_id!=="")
+                    {
+                         if(parseInt(type)===0||type==="0")
+                         {
+                              $('#'+div_id+'').html("<div class='loader-wrapper'><center class='loading-icon'></center></div>");
+                         }
+                         else
+                         {
+                              $('#'+div_id+'').html("");
+                         }
+                    }
+
+               },
+                JazeitAlert:function(alert_string){
+
+                    if(alert_string!=="")
+                    {
+                          bootbox.alert(''+alert_string+'');
+                    }
+
+               },
+               loadConfirmPopUp:function(message,reload){
+
+                    if(message!=="")
+                    {
+                         $('#alertPopUp_results').html(message);
+
+                         $('#alertPopUp_message').modal('toggle');
+
+                         if(parseInt(reload)!=0&&reload!=""&&typeof reload!=="undefined")
+                         {
+                              $('#alertPopup_status').val('1');
+                         }
+                    }
+
+               },
+               clearhtml:function(div_id)
+               {
+                    $("#"+div_id+"").html('');
+               },
+               createLinkFromName:function(str){
+
+
+//                    var result = str.replace(/\s/g, '');
+//
+//                        result = result.replace("/","");
+//
+//                        result = result.replace("&","");
+//
+//                        result = result.toLowerCase();
+
+                    var   result = str;
+
+
+                    return result;
+               },
+               // load Products
+               loadProductPopUp:function(url,curl){
+
+                    // -- show loading icon
+                    $('#global_ajax_loader').css('display','block');
+                    $('body').css('overflow','hidden');
+
+                    $('#popUpfrom').val(''+document.URL+'');
+                    $('#appendedContainer .Module').html("<img src='"+$.popUp.siteUrl+"/images/ajax-loader.gif'/>");
+
+                    $.ajax({
+                         url:url,
+                         type:'GET',
+                         success:function(res){
+
+                              // set css stuff
+                              window.history.pushState({},"",url);
+                              $('#global_ajax_loader').css('display','none');
+                              $('#appendedContainer').html(res);
+
+                              $('.formcontainer').css('position','fixed');
+                              $('.formcontainer').css('height','90%');
+                              $('.formcontainer').css('overflow','auto');
+                              $('.formcontainer').css('left','auto');
+
+                         }
+                    });
+
+               },
+               // call this when browser back button is pressed...
+               closeUp:function(){
+                    $('#appendedContainer').html('');
+                    $('.formcontainer').html('');
+                    $('.login_overlay').css('display','none');
+                    // set css stuff
+                    $('body').css('overflow','initial');
+
+                    var url=$('#popUpfrom').val();
+                    var customUrl=$('#popUpCustomUrl').val();
+
+                    if(typeof url=='undefined'||url=='')
+                         window.location=$.popUp.siteUrl;
+
+                    window.history.pushState({},"",url);
+               },
+               emptyAllContainers:function(){
+                    // emptyt the middle container except header and footer .
+                    $('#body-div').html('');
+               },
+               // ajax based listig for interiors just like pinterest listing
+               listing:function(url){
+
+                    $.popUp.emptyAllContainers();
+                    $('#global_ajax_loader').html("<img src='"+$.popUp.siteUrl+"/images/ajax-loader.gif'/>");
+                    $('#popUpfrom').val(document.URL);
+                    $.ajax({
+                         url:url,
+                         type:'GET',
+                         success:function(res){
+                              $('#global_ajax_loader').html('');
+                              window.history.pushState({},"",url);
+                              $('#body-div').html(res);
+                         }
+                    });
+
+               },
+               selectSubMenu:function(category)
+               {
+                    $('a[name=main_menu]').removeClass();
+                    $("a.active").removeClass("active");
+
+                    if(category=="interiors")
+                    {
+                         $('#i-1').addClass('active');
+
+                         $('#div_i_1').css('display','block');
+                         $('#div_i_1').css('z-index','1');
+
+                         $('#bg-ul_i_1').addClass('bg-ul sprite div-1');
+                         $('#bg-ul_i_1').css('z-index','1');
+                    }
+                    else if(category=="products")
+                    {
+                         $('div[name=div_p]').css('display','none');
+
+                    }
+
+               },
+               changeCountry:function(div,type)
+               {
+                    var flag=$('#sel_all_countries_'+div+'').children(":selected").attr("data-flag");
+
+
+                    var country=$('#sel_all_countries_'+div+'').children(":selected").attr("value");
+
+                    var countryName=$('#sel_all_countries_'+div+'').children(":selected").attr("data-name");
+
+
+                    var stateName=$('#sel_all_states_'+div+'').children(":selected").attr("data-name");
+
+                    var cityName=$('#sel_all_cities_'+div+'').children(":selected").attr("data-name");
+
+
+                    var cn_data=country+'/'+flag+'/'+countryName+'/';
+
+                    var st_data=stateName+'/';
+
+
+                    var Data='';
+
+                    if(type==1){
+                         Data=cn_data;
+                    }
+                    else if(type==2){
+                         Data=cn_data+st_data;
+                    }
+                    else if(type==3){
+                         Data=cn_data+st_data+cityName;
+                    }
+
+
+                    console.log(flag+'-'+country+'-'+countryName+'');
+                    // window.location = 'setCountry.php?country='+country+'&flag='+flag+'&name='+countryName+'';
+                    window.location=$.popUp.siteUrl+'/geo/set_country/'+Data+'';
+                    return;
+              },
+               loadPublicModules:function(url,resDiv,select){
+
+                    $('#'+resDiv+'').html('<center><img class="ajax-loader" src="'+$.popUp.siteUrl+'/images/ajax-loader-fm.gif"/></center>');
+
+                    $.ajax({
+                         url:url,
+                         type:'GET',
+                         success:function(res){
+                              //alert(res);
+							   $('#div_inte_sidebar').css({display:"none"});
+                              $('.nav_bar ul li a').removeClass('active');
+                              if(select!='')
+                                   $('#'+select+'').addClass('active');
+                              $('#'+resDiv+'').html('');
+                              $('#'+resDiv+'').html(res);
+                         }
+                    });
+               },
+               getTwoDigit:function(x){
+                    return ("0"+x).slice(-2);
+               },
+               model_hide_show:function(hid_div,show_div){
+
+                    if(hid_div!=='')
+                    {
+                         $("#"+hid_div+"").modal({backdrop:'static',keyboard:false});
+
+                         $("#"+hid_div+"").modal("hide");
+                    }
+
+                    if(show_div!=='')
+                    {
+                         $("#"+show_div+"").modal('show');
+                    }
+
+               },
+               div_hide_show:function(hid_div,show_div){
+
+                    if(hid_div!=='')
+                    {
+                         $("#"+hid_div+"").css({display: "none"});
+                    }
+
+                    if(show_div!=='')
+                    {
+                        $("#"+show_div+"").css({display: "block"});
+                    }
+
+               },
+               setValue:function(span_value,span_id)
+               {
+                    if(span_id!==''&&span_value!=='')
+                    {
+                         $("#"+span_id+"").val(span_value);
+
+                    }
+               },
+               getUserNotificationCount:function(thetitle)
+               {
+                    $.ajax({
+                         url:$.popUp.siteUrl+'/notification/getUserNotificationCounts',
+                         type:'POST',
+                         success:function(res){
+
+                              var serverRes=$.parseJSON(res);
+
+                              var result=serverRes.count;
+
+                              if(parseInt(result.status)!==0&&result.status!=="0"&&typeof (result.status)!=="undefined")
+                              {
+
+                                   $('#msg_count').html(result.message_count);
+
+                                   $('#dairy_count').html(result.dairy_count);
+
+                                   $('#notif_count').html(result.notification_count);
+
+                                   $('#acc_count').html(result.account_count);
+
+                                   $('#pending_count').html(result.pending_count);
+
+                                   $('#zmail_count').html(result.zmail_count);
+
+
+                                   //  var thetitle = $('title').text();
+
+
+                                   if(parseInt(result.total_count)!==0&& result.total_count !=='0' && typeof (result.total_count)!=="undefined")
+                                   {
+                                        $('#total_count').html('<small id="total_s_count" data-key="'+result.total_count+'">'+result.total_count+'</small>');
+
+                                        $('title').text('('+result.total_count+') '+thetitle);
+                                   }
+
+			        if(parseInt(result.quick_count)!==0&& result.quick_count !=='0' && typeof (result.quick_count)!=="undefined")
+                                   {
+                                        $('#quick_count').html('<small id="quick_s_count" data-key="'+result.quick_count+'">'+result.quick_count+'</small>');
+                                   }
+                              }
+
+                              if(parseInt(result.cart_status)!==0&&result.cart_status!=="0" &&typeof (result.cart_status)!=="undefined")
+                              {
+                                   $("#a_order_count").css({display:"inline-block"});
+
+                                   $('#order_count').html('<small>'+result.cart_count+'</small>');
+                              }else
+                              {
+                                   $("#a_order_count").css({display:"none"});
+                              }
+
+                             
+                         }
+                    });
+
+               },
+               getNotificationCount:function(thetitle)
+               {
+
+                    $.ajax({
+                         url:$.popUp.siteUrl+'/notification/getUserNotificationCounts',
+                         type:'POST',
+                         success:function(res){
+
+                              var serverRes=$.parseJSON(res);
+
+                              var result=serverRes.count;
+
+                              if(parseInt(result.status)!==0&&result.status!=="0"&&typeof (result.status)!=="undefined")
+                              {
+                                   if(parseInt(result.total_count)!==0&& result.total_count !=='0' && typeof (result.total_count)!=="undefined")
+                                   {
+                                        $('#total_count').html('<small id="total_s_count" data-key="'+result.total_count+'">'+result.total_count+'</small>');
+
+                                        $('title').text('('+result.total_count+') '+thetitle);
+                                   }
+
+			        if(parseInt(result.quick_count)!==0&& result.quick_count !=='0' && typeof (result.quick_count)!=="undefined")
+                                   {
+                                        $('#quick_count').html('<small id="quick_s_count" data-key="'+result.quick_count+'">'+result.quick_count+'</small>');
+                                   }
+                              }
+                         }
+                    });
+
+               },
+               updateSocketNotification:function()
+               {
+                    if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                    {  var socket=io.connect(''+$.popUp.socket_server+''); }
+
+                    socket.on('connect',function(){
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/notification/getUserNotificationCounts',
+                              type:'POST',
+                              success:function(res){
+
+                                   var serverRes=$.parseJSON(res);
+
+                                   var result=serverRes.count;
+
+                                   if(parseInt(result.status)!==0&&result.status!=="0"&&typeof (result.status)!=="undefined")
+                                   {
+                                        socket.emit('updateNotification',result.user_id,result.total_count);
+
+                                        socket.emit('updateQuickNotification',result.user_id,result.quick_count);
+                                   }
+                              }
+                         });
+                    });
+               },
+               updateUserNotification:function(thetitle,count)
+               {
+                    if(parseInt(count) !== 0)
+                    {
+                         var spn_count = $('#total_s_count').attr("data-key");
+                         
+                         if(typeof (spn_count) !== "undefined" && !isNaN(spn_count))
+                         { count =  parseInt(spn_count) + parseInt(count);   }
+
+                         $('#total_count').html('<small id="total_s_count" data-key="'+count+'">'+count+'</small>');
+                         
+                         $('title').text('('+count+') '+thetitle);  
+                    }
+                    else
+                    { $('#total_count').html(''); }
+               },
+               updateUserQuicNotification:function(count)
+               {
+                    if(parseInt(count) !== 0)
+                    {
+                         var spn_count = $('#quick_s_count').attr("data-key");
+                         
+                         if(typeof (spn_count) !== "undefined" && !isNaN(spn_count))
+                         { count =  parseInt(spn_count) + parseInt(count);   }
+                         
+                         $('#quick_count').html('<small id="quick_s_count" data-key="'+count+'">'+count+'</small>');
+                    }
+                    else
+                    { $('#quick_count').html(''); }
+               },
+               
+               
+               
+               checkLiveMeeting:function()
+               {
+//                    $.ajax({
+//                         url:$.popUp.siteUrl+'/jcon/checkMeetingSchedule',
+//                         type:'POST',
+//                         success:function(res){
+//
+//                              var serverRes=$.parseJSON(res);
+//
+//                              var retn_result=serverRes.ret_result;
+//
+//                              if(parseInt(retn_result.status)!==0&&retn_result.status!=="0"&&typeof (retn_result.status)!=="undefined")
+//                              {
+//                                   var schedul=retn_result.result;
+//
+//                                   var usr_length=schedul.length;
+//
+//                                   if(parseInt(usr_length)!==0)
+//                                   {
+//                                        schedul.forEach(function(u,i){
+//                                             setTimeout(function(){
+//
+//                                                  if(typeof socket==='undefined'||socket===null||socket==='undefined')
+//                                                  { var socket=io.connect(''+$.popUp.socket_server+''); }
+//
+//                                                  socket.on('connect',function(){
+//
+//                                                       socket.emit('setJSchedule',schedul[i].user_id,schedul[i].meeting_id,schedul[i].title,new Date(schedul[i].date+', '+schedul[i].time));
+//
+//                                                  });
+//                                             },u);
+//                                        });
+//                                   }
+//                              }
+//                         }
+//                    });
+               },
+               getLiveMeetingDetails:function(retn_result)
+               { 
+                    if(parseInt(retn_result.status)!==0&&retn_result.status!=="0"&&typeof (retn_result.status)!=="undefined")
+                    {
+                         $('#jcon_title').html(retn_result.meeting_title);
+
+                         $('#hid_meet_id').val(retn_result.meeting_id);
+                         
+                          var sample=document.getElementById("aud_jcon");
+                           sample.play();
+
+                         $('#model_joinRoom').modal('show');
+                    }
+               },
+               joinLiveMeeting:function()
+               {
+                     var sample=document.getElementById("aud_jcon");
+                         sample.pause();   
+                                                          
+                    var meeting_id = $('#hid_meet_id').val();
+
+                    if(parseInt(meeting_id) !== 0)
+                    {
+                         window.location.href=$.popUp.siteUrl+'/jcon/jcon_room/'+meeting_id;
+                    }
+               },
+               holdJoinLiveMeeting:function()
+               {
+                    var sample=document.getElementById("aud_jcon");
+                        sample.pause();   
+                         
+                    var meeting_id = $('#hid_meet_id').val();
+
+                    if(parseInt(meeting_id) !== 0)
+                    {
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/jcon/updtaeMeetingSchedule',
+                              data:{meeting_id:meeting_id},
+                              type:'POST',
+                              success:function(res){
+
+                                   if(parseInt(res) ===1)
+                                   {
+                                        $('#model_joinRoom').modal('hide');
+
+                                         $.popUp.checkLiveMeeting();
+                                   }
+                                   else
+                                   {
+                                        console.log(res);
+                                   }
+
+                              }
+                         });
+                    }
+               },
+               rejectJoinLiveMeeting:function()
+               {
+                    var sample=document.getElementById("aud_jcon");
+                        sample.pause();   
+                         
+                    $.ajax({
+                         url:$.popUp.siteUrl+'/jcon/rejectJoinMeeting',
+                         data:$('#frm_jcon_join').serialize(),
+                         type:'POST',
+                         success:function(res){
+
+                              if(parseInt(res) ===1)
+                              {
+                                   $('#model_joinRoom').modal('hide');
+                              }
+
+                         }
+                    });
+               },
+
+
+
+
+               getJconCallDetails:function(retn_result)
+               {
+
+                    if(parseInt(retn_result.status)!==0 && retn_result.status!=="0" && typeof (retn_result.status)!=="undefined")
+                    {
+                        
+                         $("#spn_bg_img").attr("style"," background: url('"+retn_result.user_logo+"') no-repeat center; background-size: cover;");
+
+                         $('#h2_caller_name').html(retn_result.user_name);
+
+                         $('#hid_c_user_id').val(retn_result.user_id);
+
+                         $('#hid_c_meeting_id').val(retn_result.meeting_id);
+
+                         if(parseInt(retn_result.call_type)===1)
+                         {
+                              $("#btn_jcall_video").css({display:"none"});
+                         }else
+                         {
+                              $("#btn_jcall_video").css({display:"inline-block"});
+                         }
+
+
+                         $('#incoming_jcon_call').modal('show');
+
+                         var sample=document.getElementById("aud_jcall");
+                         sample.play();
+
+                         
+                         var break_status = 0;
+                              
+                         var i = 0;
+
+                         $.popUp.j_interval=setInterval(function(){
+
+                             i = i+1;
+  
+                              if(parseInt(i) === 30)
+                              {
+                                   clearInterval($.popUp.j_interval);
+
+                                   $.ajax({
+                                        url:$.popUp.siteUrl+'/jcon/attendJCall',
+                                        data:{hid_c_meeting_id:retn_result.meeting_id,hid_c_user_id:retn_result.user_id,call_status:"0",call_type:"0"},
+                                        type:'POST',
+                                        success:function(result){
+                                             
+                                             var serverRes=$.parseJSON(result);
+
+                                             var retn_result=serverRes.j_result;
+                                            
+                                             if(parseInt(retn_result.status) === 1)
+                                             {
+                                                  if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                                                  { var socket=io.connect(''+$.popUp.socket_server+''); }
+
+                                                  socket.on('connect',function(){
+                                                        
+                                                      socket.emit('jcall_end',retn_result);
+                                                      
+                                                      socket.emit('removeJcall',retn_result);
+                                                         
+                                                      var sample=document.getElementById("aud_jcall");
+                                                          sample.pause();     
+                                                          
+                                                       $('#incoming_jcon_call').modal('hide');     
+                                                       
+                                                       break_status = 1;
+                                                  });
+                                             }
+
+                                        }});
+                              } 
+                              else {
+                               
+                                    if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                                    { var socket=io.connect(''+$.popUp.socket_server+''); }
+                                    
+                                    socket.on('connect',function(){              
+                                         socket.on('jcall_details_'+retn_result.meeting_id,function(result){
+                                            
+                                                  if(parseInt(result.status) === 0)
+                                                  {
+                                                       clearInterval($.popUp.j_interval);
+
+                                                       var sample=document.getElementById("aud_jcall");
+                                                       sample.pause();
+
+                                                       $('#incoming_jcon_call').modal('hide');
+                                                       
+                                                       break_status = 1;
+                                                  }                               
+                                        });           
+                                    });
+                                    
+                                    
+                              }
+                              
+                              if(parseInt(break_status) === 1){ clearInterval($.popUp.j_interval); }
+                              
+                                  
+                              
+                         },1000);
+                    }
+                    else
+                    {
+                         clearInterval($.popUp.j_interval);
+                         
+                         if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                         { var socket=io.connect(''+$.popUp.socket_server+''); }
+
+                          socket.on('connect',function(){
+                                                        
+                              socket.emit('jcall_end',retn_result);
+                              
+                              socket.emit('removeJcall',retn_result);
+                                                           
+                               var sample=document.getElementById("aud_jcall");
+                                     sample.pause();     
+                                                          
+                               $('#incoming_jcon_call').modal('hide');     
+                         });
+                    }
+
+               },
+               callJcon:function(call_status,company_user_id)
+               {
+                    
+                    if(parseInt(call_status)!==0 && parseInt(company_user_id)!==0)
+                    {
+                         var user_online = 0;
+                         //check user is avilable or not
+                         if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                         {
+                              var socket=io.connect(''+$.popUp.socket_server+'');
+                         }
+
+                         socket.on('connect',function(){
+
+                              socket.emit('jcall_user_online',company_user_id,function(data){
+                                   setTimeout(function(){
+
+                                        if(parseInt(data) === 0 || parseInt(data) === 2)
+                                        { user_online = 0; }
+                                        else
+                                        { user_online = 1; }
+                                        
+                                        // call_status = 1:voice, 2:video
+                                        $.ajax({
+                                             url:$.popUp.siteUrl+'/jcon/saveJocnCallDetails',
+                                             data:{company_user_id:company_user_id,call_status:call_status,user_online:user_online},
+                                             type:'POST',
+                                             success:function(result){
+
+                                                  var serverRes=$.parseJSON(result);
+
+                                                  var retn_result=serverRes.j_result;
+
+                                                  if(parseInt(retn_result.status)===1)
+                                                  {
+                                                      if(parseInt(data)===1)
+                                                      {
+                                                           socket.emit('jcall_insert',retn_result);
+                                                           
+                                                           window.open($.popUp.siteUrl+"/jcon/callJcon/1/"+retn_result.meeting_id+"/"+company_user_id,"chat","height=560,width=560,toolbar=0, menubar=0, scrollbars=0, resizable=0,location=0, directories=no, status=0");
+                                                      }
+                                                      else  if(parseInt(data)===1)
+                                                      {
+                                                            bootbox.alert('Sorry, user is busy, Try again later');
+                                                      }
+                                                      else
+                                                      {
+                                                            bootbox.alert('Sorry, user is not available now');
+                                                      }
+                                                  }
+                                                  else
+                                                  {
+                                                       console.log(result);
+                                                  }
+                                             }
+                                        });
+                                   },500);
+                              });
+                         });
+                    }
+               },
+               attendJCall:function(status,type)
+               {
+                    if(parseInt(status)!==0 && type !== "")
+                    {
+                         // status = 1:call , 2:progress , 3:reject , 4:end , 0:not answer
+                         // type = 1= voice , 2 = video
+                         
+                         
+                         clearInterval($.popUp.j_interval);
+                         
+                         
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/jcon/attendJCall',
+                              data:$('#form_incoming_call').serialize()+"&call_status="+status+"&call_type="+type+"",
+                              type:'POST',
+                              success:function(result){
+
+                                   var serverRes=$.parseJSON(result);
+
+                                   var retn_result=serverRes.j_result;
+
+                                   if(parseInt(retn_result.status)  === 1)
+                                   {
+                                         var sample=document.getElementById("aud_jcall");
+                                         sample.pause();
+                                         
+                                         $('#incoming_jcon_call').modal('hide');
+                                   
+                                        if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                                        { var socket=io.connect(''+$.popUp.socket_server+''); }
+
+                                        socket.on('connect',function(){
+                                             
+                                             if(parseInt(status) !== 3)
+                                             {
+                                                   socket.emit('update_jCallDetails',retn_result);
+                                                   
+                                                   window.open($.popUp.siteUrl+"/jcon/callJcon/2/"+retn_result.meeting_id+"/"+retn_result.user_id, "chat", "height=560,width=560,toolbar=0, menubar=0, scrollbars=0, resizable=0,location=0, directories=no, status=0");
+                                             }
+                                             else
+                                             {
+                                                    socket.emit('jcall_end',retn_result);
+                                                    
+                                                    socket.emit('removeJcall',retn_result);
+                                             }
+                                        });
+                                   }
+                              }
+                         });
+                    }
+               },
+               updateJconCallStatus:function(status,type)
+               {
+                   if(parseInt(status) !== 0 && type !== "")
+                   {
+                         $.ajax({
+                                  url:$.popUp.siteUrl+'/jcon/attendJCall',
+                                  data:$('#form_jcall').serialize()+"&call_status="+status+"&call_type="+type+"",
+                                  type:'POST',
+                                  success:function(result){
+                                      
+                                       if(parseInt(status) === 4)
+                                       {
+                                             if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                                             { var socket=io.connect(''+$.popUp.socket_server+'');}
+
+                                             socket.on('connect',function(){
+                                                  
+                                                  socket.emit('jcall_end',result);
+
+                                                  socket.emit('removeJcall',result);
+                                                  
+                                                  setTimeout(function(){
+                                                        window.close();
+                                                  },1000);
+                                                  
+                                             });  
+                                        }
+                                   }
+                        });
+                   }
+               },
+               
+              
+       
+
+
+
+
+               setFocus:function(txt_name)
+               {
+                    setTimeout(function(){
+
+                         $("#"+txt_name+"").focus();
+
+                    },1000);
+               },
+               divClear:function(txt_name)
+               {
+                    $("#"+txt_name+"").html('');
+               },
+
+
+               updateNotification:function(notify_link,type){
+
+                    if(parseInt(notify_link) !== 0 && type != "")
+                    {
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/notifications/updateNotificationRead/',
+                              type:'POST',
+                              data : { notify_link : notify_link,notify_type : type},
+                              success:function(res){
+                                   // console.log(res);
+
+                              }
+                         });
+                    }
+               },
+               saveGoogleLang:function(res,type){
+
+               var f_lan = '';
+               var t_lan = '';
+
+               if(parseInt(type) === 0)
+               {
+                    f_lan = res[1];
+                    t_lan = res[2];
+               }
+
+               console.log('from:'+f_lan+' - to:'+t_lan);
+
+               },
+               fillUserMenuTab:function(){
+                    $.ajax({
+                         url:$.popUp.siteUrl+'/company/getMenuTabs/',
+                         type:'POST',
+                         success:function(res){
+
+                              var serverRes=$.parseJSON(res);
+
+                              var retn_result=serverRes.result;
+
+                              $("#div_dropdown_messenger").html(retn_result.messenger);
+
+                              $("#div_dropdown_dairy").html(retn_result.dairy);
+
+                              $("#div_dropdown_mailit").html(retn_result.mailit);
+
+                              $("#div_dropdown_email").html(retn_result.email);
+
+                              $("#div_dropdown_accounting").html(retn_result.accounting);
+
+                              $("#div_dropdown_eorders").html(retn_result.eorder);
+
+                              $("#div_dropdown_followers").html(retn_result.followers);
+                              
+                              $("#div_dropdown_jcon").html(retn_result.jcon);
+
+                               setTimeout(function(){
+
+                                    $.popUp.getUserNotificationCount(" Jazeit | UAE's Largest Search Portal ");
+
+
+
+                              },1000);
+
+							 $('.header-main-navigation-wrap .header-user-action-nav').addClass('loaded');
+							 
+							 
+                         }
+                    });
+               },
+               activateMenuTab:function(menu_master_id){
+
+                    if(parseInt(menu_master_id)!==0)
+                    {
+                         bootbox.confirm("do you want to activate Tab? ",function(cnfrm){
+
+                              if(cnfrm===true)
+                              {
+                                   $.ajax({
+                                        url:$.popUp.siteUrl+'/Company/saveMenu/1',
+                                        data:{menu_master_id:menu_master_id,status:0},
+                                        type:'POST',
+                                        success:function(res){
+
+                                             if(res!=='')
+                                             {
+                                                  window.location.href=$.User.siteUrl+res;
+                                             }
+                                        }
+                                   });
+                              }
+                         });
+                    }
+               },
+               isNumberKey:function(evt){
+
+                    var charCode=(evt.which)?evt.which:event.keyCode;
+
+                    if(charCode>31&&(charCode<48||charCode>57))
+                         return false;
+                    return true;
+               },
+
+
+
+            //-------------------------------- Geo -------------------------------------------------//    
+              
+               fillState:function(country_id,state_id,state_dd,city_dd,area_dd)
+               {
+                    if(state_dd!=='' && typeof state_dd !== "undefined")
+                    {
+                        $('#'+state_dd+'').html('<option value="0">Choose Option</option>');
+                    
+                        $('#'+state_dd+'').selectpicker('refresh');
+                    }
+
+
+                    if(city_dd !=='' && typeof city_dd !== "undefined")
+                    {
+                        $('#'+city_dd+'').html('<option value="0">Choose Option</option>');
+                    
+                        $('#'+city_dd+'').selectpicker('refresh');
+                    }
+
+
+                    if(area_dd !=='' && typeof area_dd !== "undefined")
+                    {
+                        $('#'+area_dd+'').html('<option value="0">Choose Option</option>');
+                    
+                        $('#'+area_dd+'').selectpicker('refresh');
+                    }
+
+                    if(parseInt(country_id)!==0)
+                    {
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/geo/getStateList',
+                              data:{country_id:country_id,state_id:state_id},
+                              type:'POST',
+                              success:function(res){
+                                   
+                                   var serverRes=$.parseJSON(res);
+                                   
+                                   if(parseInt(serverRes.status) === 1)
+                                   {
+                                       $('#'+state_dd+'').html(serverRes.result);
+                                       
+                                       $('#'+state_dd+'').selectpicker();
+
+                                       $('#'+state_dd+'').selectpicker('refresh');
+                                   }
+                              }
+                         });
+                    }
+               },
+               filCity:function(state_id,city_id,city_dd,area_dd)
+               {
+                   
+                    if(city_dd !=='' && typeof city_dd !== "undefined")
+                    {
+                        $('#'+city_dd+'').html('<option value="0">Choose Option</option>');
+                    
+                        $('#'+city_dd+'').selectpicker('refresh');
+                    }
+
+
+                    if(area_dd !=='' && typeof area_dd !== "undefined")
+                    {
+                        $('#'+area_dd+'').html('<option value="0">Choose Option</option>');
+                    
+                        $('#'+area_dd+'').selectpicker('refresh');
+                    }
+
+                    if(parseInt(state_id)!==0)
+                    {
+                        
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/geo/getCityList',
+                              data:{state_id:state_id,city_id:city_id},
+                              type:'POST',
+                              success:function(res){
+ 
+                                   var serverRes=$.parseJSON(res);
+                                   
+                                   if(parseInt(serverRes.status) === 1)
+                                   {
+                                       $('#'+city_dd+'').html(serverRes.result);
+                                       
+                                       $('#'+city_dd+'').selectpicker();
+
+                                       $('#'+city_dd+'').selectpicker('refresh');
+                                   }
+                              }
+                         });
+                    }
+               },
+               fillSuburb:function(city_id,area_id,area_dd)
+               {
+                    if(area_dd !=='' && typeof area_dd !== "undefined")
+                    {
+                        $('#'+area_dd+'').html('<option value="0">Choose Option</option>');
+                    
+                        $('#'+area_dd+'').selectpicker('refresh');
+                    }
+
+                    if(parseInt(city_id)!==0)
+                    {
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/geo/getAreaList',
+                              data:{city_id:city_id,area_id:area_id},
+                              type:'POST',
+                              success:function(res){
+
+                                   var serverRes=$.parseJSON(res);
+
+                                   if(parseInt(serverRes.status)===1)
+                                   {
+                                       $('#'+area_dd+'').html(serverRes.result);
+                                       
+                                       $('#'+area_dd+'').selectpicker();
+
+                                       $('#'+area_dd+'').selectpicker('refresh');
+                                   }
+                              }
+                         });
+                    }
+               },
+               
+            //-------------------------------- Geo -------------------------------------------------//   
+               
+            //-------------------------------- Company Autofill -------------------------------------------------//    
+               
+               AutofillCompanyNames:function(key,sub_type,ul_id,id_fild,name_fild)
+               {
+
+                    if(key !== "" && typeof key !== "undefined")
+                    {
+                        var li_class = Math.random();
+                        
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/company/AutofillCompanyNames',
+                              data:{key:key,sub_type:sub_type,li_class:li_class},
+                              type:'POST',
+                              success:function(res){
+
+                                   var serverRes=$.parseJSON(res);
+
+                                   if(parseInt(serverRes.status)===1)
+                                   {
+                                       $('#'+ul_id+'').html(serverRes.result);
+                                       
+                                       $('.li_autofill_'+li_class+'').click(function(){
+                                       
+                                            $('#'+id_fild+'').val($(this).data("id"));
+                                            
+                                            $('#'+name_fild+'').html($(this).data("name"));
+                                       });
+                                       
+                                   }
+                              }
+                         });
+                    }
+               },
+               
+            //-------------------------------- Company Autofill -------------------------------------------------//  
+            
+            
+               getGoogleLanguageKey:function()
+               {
+                    var language=$("#h_hide_eng").text();
+
+                    var key = '';
+
+                    switch(language)
+                    {
+                         case "English":
+                              key='en';
+                              break;
+                         case "Afrikaans":
+                              key='af';
+                              break;
+                         case "Arabic":
+                              key='ar';
+                              break;
+                         case "Chinese (Simplified)":
+                              key='zh-CN';
+                              break;
+                         case "French":
+                              key='fr';
+                              break;
+                         case "German":
+                              key='de';
+                              break;
+                         case "Hindi":
+                              key='hi';
+                              break;
+                         case "Hindi":
+                              key='hi';
+                              break;
+                         case "Japanese":
+                              key='ja';
+                              break;
+                         case "Russian":
+                              key='ru';
+                              break;
+                         case "Spanish":
+                              key='es';
+                              break;
+                         default:
+                              break;
+                    }
+
+                    return key;
+               },
+               translateWord:function(txt,lang,reslt)
+               {
+                    if(txt!==""&&txt!==null)
+                    {
+                         $.ajax({
+                              url:"https://translate.yandex.net/api/v1.5/tr.json/translate",
+                              data:{key:"trnsl.1.1.20170702T124322Z.e36c5963dc25ab14.ff6ae6e9cc36a7c5243bf100495522eb1ade6033",text:txt,lang:lang,format:"plain"},
+                              type:'POST',
+                              success:function(res){
+
+                                   var msg_details=res.text[0];
+
+                                    reslt(msg_details);
+                              }
+                         });
+                    }
+               },
+               switchAccount:function(group_id){
+
+                    if(parseInt(group_id)!== "")
+                    {
+                         $('#model_loading').modal('toggle');
+
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/Switchuser/setSwitchAccount',
+                              data:{group_id:group_id},
+                              type:'POST',
+                              success:function(result){
+
+                                   var serverRes=$.parseJSON(result);
+                                   
+                                   if(parseInt(serverRes.status)===1)
+                                   {
+                                        if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                                        { var socket=io.connect(''+$.popUp.socket_server+''); }
+
+
+                                        socket.on('connect',function(){
+
+                                             socket.emit('user_disconnect',serverRes.old_account_id);
+
+                                             socket.emit('check_user',serverRes.new_account_id,function(data){
+console.log(data);
+                                                  setTimeout(function(){
+                                                       
+                                                        $.popUp.checkLiveMeeting();
+
+                                                        $('#model_loading').modal('hide');
+
+                                                       localStorage.removeItem("search_value");
+                                                       localStorage.removeItem("search_location");
+                                                       localStorage.setItem("jcall_status","0");
+
+                                                       window.location.href= $(location).attr('href');
+
+
+                                                  },2000);
+                                                  
+                                             });
+                                        });
+                                   }else
+                                   {
+                                       console.log(serverRes);
+                                       
+                                       // $.popUp.getLinkAccounts();
+                                   }
+                              }
+                         });
+                    }
+               },
+               logoutAccount:function(){
+
+                    $('#model_loading').modal('toggle');
+                    
+                    
+
+                         $.ajax({
+                              url:$.popUp.siteUrl+'/user/logoutAccount',
+                              type:'POST',
+                              success:function(result){
+
+                              var serverRes=$.parseJSON(result);
+
+                              var retn_result=serverRes.logout_result;
+ 
+                                   if(parseInt(retn_result.status) === 1)
+                                   {
+                                        if(typeof socket==='undefined'|| socket===null || socket === 'undefined')
+                                        { var socket=io.connect(''+$.popUp.socket_server+''); }
+
+                                        socket.on('connect', function() {
+                                             
+                                             socket.emit('user_disconnect',retn_result.user_id); 
+                                  
+                                                  setTimeout(function(){
+                                                       //console.log(data);
+                                                       
+                                                        localStorage.removeItem("search_value");
+                                                        localStorage.removeItem("search_location");
+                                                        localStorage.setItem("jcall_status","0");
+
+                                                        $('#model_loading').modal('hide');
+                                                         
+                                                        window.location.replace($.popUp.siteUrl);
+                                                        window.location.href = $.popUp.siteUrl;
+                                        
+                                                  },50);
+                                        });
+                                        
+                                   }
+                                   else
+                                   {
+                                         console.log(retn_result);
+                                        $.popUp.logoutAccount();
+                                   }
+                              }
+                         });
+               },
+               updateUserPageSocket:function(user_id)
+               {
+                    if(parseInt(user_id)!== 0)
+                    {
+                         var control_name,page_name;
+                         
+                          var page = window.location.pathname.split("/");
+                          
+                          if(page[1] !== "" )
+                          { 
+                               control_name = page[1];
+                               page_name = page[2];
+                          }
+                          else
+                          {
+                              control_name =''
+                              page_name = "home_page";
+                          }
+                         
+                         if(typeof socket==='undefined'||socket===null||socket==='undefined')
+                         { var socket=io.connect(''+$.popUp.socket_server+''); }
+
+                         socket.on('connect',function(){
+
+                              socket.emit('updateUserActPage',user_id,control_name,page_name);
+                         });
+
+                    }
+               },
+               
+               
+               fillUserQuickLinks:function()
+               {
+                    $.ajax({
+                         url:$.popUp.siteUrl+'/zmail/fillUserQuickLinks',
+                         type:'POST',
+                         success:function(res){
+                              $("#fill_quick_links").html(res);
+                         }
+                    });
+               },
+
+			fillNotices:function()
+						   {
+							   
+							   var key= $("#search_notice").val();
+							   var notice_type= $("#notice_type").val();
+							   var cat_id= $("#cat_id").val();
+							   var city_id= $("#city_id").val();
+							   
+								$('#search_notices_result').html("<center><img src='"+$.popUp.siteUrl+"/images/ajax-loader.gif'/></center>");
+			
+								$.ajax({
+									 url:$.popUp.siteUrl+'/cityinfo/getNoticeslist/',
+									 data:{key:key,notice_type:notice_type,cat_id:cat_id,city_id:city_id},
+									 type:'POST',
+									 success:function(res){
+			console.log(res);
+										  $("#search_notices_result").html(res);
+			
+									 }
+								});
+						   },
+
+
+               convertTimeToStatus:function(convert_date,return_status)
+               {
+                    var status;
+
+                    var local_date=new Date().toLocaleString("en-US",{timeZone:"Asia/Dubai"});
+
+                    local_date=new Date(local_date);
+
+                    convert_date=new Date(convert_date);
+
+                    var difference_ms=local_date.getTime()-convert_date.getTime();
+
+                    difference_ms=difference_ms/1000;
+                    // var seconds = Math.floor(difference_ms % 60);
+                    difference_ms=difference_ms/60;
+                    //var minutes = Math.floor(difference_ms % 60);
+                    difference_ms=difference_ms/60;
+                    var hours=Math.floor(difference_ms%24);
+                    var days=Math.floor(difference_ms/24);
+
+                    if(parseInt(days)===0&&parseInt(hours)<=1)
+                    {
+                         status=1;
+                    }else if(parseInt(days)===0&&parseInt(hours)<=2)
+                    {
+                         status=2;
+                    }else
+                    {
+                         status=0;
+                    }
+
+                    return_status(status);
+               },   
+               
+               checkUserOnlineStatus:function(user_id,return_status)
+               {
+                    if(parseInt(user_id) !== 0)
+                    {
+                         if(typeof socket==='undefined'|| socket===null || socket === 'undefined')
+                         { var socket=io.connect(''+$.popUp.socket_server+''); }
+                        
+                         socket.on('connect', function() {
+                              // check user is online
+                              socket.emit('getUserLastActivTime',user_id,function(l_details){ 
+                                   if(l_details !== '' && l_details !== null) {
+                                      $.popUp.convertTimeToStatus(l_details, function(r_result) { return_status(r_result); });
+                                   }
+                                   else {
+                                        return_status(0);
+                                   }
+                                        
+                            });
+                         });
+                    }
+               },
+               
+               emitSocketNotification:function(user_id,type,count,return_status)
+               {
+                    if(parseInt(user_id) !== 0)
+                    {
+                         // type : 0 = send both, 1 = only notification 
+                         if(typeof socket==='undefined'|| socket===null || socket === 'undefined')
+                         { var socket=io.connect(''+$.popUp.socket_server+''); }
+                         
+                         socket.on('connect', function() {
+                               // check user is online
+                              socket.emit('getUserLastActivTime',user_id,function(l_details){
+                                    $.popUp.convertTimeToStatus(l_details, function(r_result) 
+                                    {  if(parseInt(r_result) === 1) {
+                                            if(parseInt(type) === 1) { 
+                                                 socket.emit('updateNotification',user_id,count);  }
+                                            else {
+                                                 socket.emit('updateNotification',user_id,count);
+                                                 socket.emit('updateQuickNotification',user_id,count);
+                                            }  
+                                        }
+                                    });
+                            });
+                            return_status('1');
+                         });
+                    }
+               },             
+            dateJazeitformat: function (date, patternStr) {
+
+            var monthNames = [
+                "January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"
+            ];
+            var dayOfWeekNames = [
+                "Sunday", "Monday", "Tuesday",
+                "Wednesday", "Thursday", "Friday", "Saturday"
+            ];
+
+            if (!patternStr) {
+                patternStr = 'M/d/yyyy';
+            }
+            
+            var day = date.getDate(),
+                    month = date.getMonth(),
+                    year = date.getFullYear(),
+                    hour = date.getHours(),
+                    minute = date.getMinutes(),
+                    second = date.getSeconds(),
+                    miliseconds = date.getMilliseconds(),
+                    h = hour % 12,
+                    hh = this.twoDigitPad(h),
+                    HH = this.twoDigitPad(hour),
+                    mm = this.twoDigitPad(minute),
+                    ss = this.twoDigitPad(second),
+                    aa = hour < 12 ? 'AM' : 'PM',
+                    EEEE = dayOfWeekNames[date.getDay()],
+                    EEE = EEEE.substr(0, 3),
+                    dd = this.twoDigitPad(day),
+                    M = this.twoDigitPad(month + 1),
+                    N = monthNames[month],
+                    yyyy = year + "",
+                    yy = yyyy.substr(2, 2),
+                    off = date.getTimezoneOffset()
+                    ;
+
+                var extraZero = "";    
+                var OFF = "";         
+                    if(off<0) 
+                    {
+                     if(-off%60<10)
+                     { extraZero="0"; }
+                     OFF = "GMT+" + Math.ceil(off/-60)+":"+extraZero+(-off%60); 
+                    }
+                    else 
+                    {
+                      if(off%60<10)
+                      { extraZero="0"; }   
+                     OFF = " GMT-"+Math.floor(off/60)+":"+extraZero+(off%60); 
+                    }
+                        
+
+            return patternStr
+                    .replace('hh', hh).replace('h', h)
+                    .replace('HH', HH).replace('H', hour)
+                    .replace('mm', mm).replace('m', minute)
+                    .replace('ss', ss).replace('s', second)
+                    .replace('S', miliseconds)
+                    .replace('dd', dd).replace('d', day)
+                    .replace('M', M)
+                    .replace('N', N)
+                    .replace('EEEE', EEEE)
+                    .replace('EEE', EEE)
+                    .replace('yyyy', yyyy)
+                    .replace('yy', yy)
+                    .replace('aa', aa)
+                    .replace('OFF', OFF)
+                    ;
+        },
+        twoDigitPad: function (num) {
+            num = num < 10 ? "0" + num : num;
+            
+            if(num == "00")
+            {num = "12";}
+            
+            return num;
+        } ,      
+        //Load Jazecom Pages       
+        loadJazecomPages: function (url, res_div, loader) {
+
+            if (parseInt(loader) === 1)
+            { PAGE_UTIL.loader_show();}
+
+            $('#' + res_div + '').html("");
+ 
+            //loader          
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {},
+                success: function (res) {
+                    $('#' + res_div + '').html(res);
+
+                    if (parseInt(loader) === 1)
+                    { PAGE_UTIL.loader_hide();}
+                }
+            });
+        }     
+               
+               
+               
+
+          }	// $.popUp
+
+     })(jQuery);
+
+// main menu - drop down for city
+
+     $(document).ready(function(){
+          $(".account").click(function(){
+               var X=$(this).attr('id');
+
+               if(X==1){
+                    $(".submenu").hide();
+                    $(this).attr('id','0');
+               }else{
+
+                    $(".submenu").show();
+                    $(this).attr('id','1');
+               }
+
+          });
+
+
+     });
+
+
+// main menu: photos dropdown
+
+     $(document).ready(function(){
+          $(".photo").click(function(){
+               var X=$(this).attr('id');
+
+               if(X==1){
+                    $(".photomenu").hide();
+                    $(this).attr('id','0');
+               }else{
+
+                    $(".photomenu").show();
+                    $(this).attr('id','1');
+               }
+
+          });
+
+     });
+
+// main menu: user profile dropdown
+
+     $(document).ready(function(){
+          $(".users").click(function(){
+               var X=$(this).attr('id');
+
+               if(X==1){
+                    $(".usermenu").hide();
+                    $(this).attr('id','0');
+               }else{
+
+                    $(".usermenu").show();
+                    $(this).attr('id','1');
+               }
+
+          });
+
+
+     });
+
+// main navigation menu - each item on click
+     $(document).ready(function(){
+          $('#navigation_menu li a').click(function(){
+               var itsUrl=$(this).attr('data-url');
+               $.popUp.listing(itsUrl);
+          });
+     });
+
+
+     /** Header Live Search **/
+//
+
+     $('#form input,select').keyup(function(){
+          var count=0;
+          $("input").each(function(){
+               if($(this).val()!=""){
+                    count++;
+               }
+               if(count>1){
+                    $.get('ajaxSearch.php',$("#form").serialize(),function(data){
+                         $('#result').html(data);
+                    });
+               }
+               else{
+                    $("#result").hide();
+               }
+          });
+     });
+
+// live search for inner page only. for the index page it is on index.js file
+
+     $(document).ready(function(){
+
+
+          $('#home_live_search,#search_form').on("keyup",function(){
+
+               $('#home-search-results').html("<center><img src='"+$.popUp.siteUrl+"/images/ajax-loader.gif'/></center>");
+
+               // Set Search String
+               var search_string=$("#home_live_search").val();
+               console.log(search_string);
+
+               // Do Search
+               if(search_string!='')
+               {
+
+                    $('#home-search-results').css('display','block');
+                    $.ajax({
+                         type:'GET',
+                         //url:  $.popUp.siteUrl+'/search/key/'+search_string+'/hide/'+radVal+'',
+                         url:$.popUp.siteUrl+'/search/key/'+search_string+'',
+                         cache:false,
+                         success:function(html){
+
+                              // console.log(html);
+                              $('#home-search-results').html(html);
+                         }
+                    });
+               }
+               else if(search_string=='')
+               {
+                    $('#home-search-results').css('display','none');
+
+                    clearResults();
+               }
+
+               return false;
+
+          });
+
+
+
+
+          // submitFormParent('1');
+          // add another function for search results
+
+
+          // end another function
+
+     });
+
+
+
+     /** Menu Hover **/
+     $(document).ready(function(){
+
+
+          $('#li_interiors').hover(function(){
+               $('ul.main_menu li.service ul.sub_menu ul#first').css('display','block');
+          },function(){
+               console.log('un hover');
+               $('ul.main_menu li.service ul.sub_menu ul#first').css('display','none');
+          });
+
+          // hide first one
+          $('ul.sub_menu li#parent-first').hover(function(){
+               $('ul.main_menu li.service ul.sub_menu ul#first').css('display','block');
+          },function(){
+               $('ul.main_menu li.service ul.sub_menu ul#first').css('display','none');
+          });
+
+          // For the products
+          $('#li_products').hover(function(){
+               $('ul.main_menu li.service ul.sub_menu ul#products-first').css('display','block');
+          },function(){
+               console.log('un hover');
+               $('ul.main_menu li.service ul.sub_menu ul#products-first').css('display','none');
+          });
+
+          // hide first one
+          $('ul.sub_menu li#products-parent-first').hover(function(){
+               $('ul.main_menu li.service ul.sub_menu ul#products-first').css('display','block');
+          },function(){
+               $('ul.main_menu li.service ul.sub_menu ul#products-first').css('display','none');
+          });
+
+     });

@@ -1,0 +1,101 @@
+ .SelectCustom > .dropdown.bootstrap-select > button {
+            display: none;
+        }
+        .table-listing > li.date {
+            position: relative;
+        }
+        span.option-task {
+            background-image: url(../img/option-icon.svg);
+            height: 25px;
+            width: 25px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            visibility: hidden;
+        }
+        .table-listing:hover span.option-task {
+            visibility: visible;
+        }
+        .dropdown-customize {
+            position: absolute;
+            background: white;
+            border: 1px solid #e2e2e2;
+            /* width: 155px; */
+            margin-top: 49px;
+            z-index: 1;
+            right: 16px;
+            border-radius: 5px;
+            visibility: hidden;
+            opacity: 0;
+            height: 0;
+            width: 0;
+        }
+        .dpShow {
+            visibility: visible;
+            opacity: 1;
+            height: auto;
+            width: 155px;
+        }
+        .dropdown-customize p {
+            margin: 0;
+            cursor: pointer;
+            padding: 15px;
+        }
+        .dropdown-customize p:hover {
+            background: #e8e8e8;
+        }
+        .dropdown-customize p:first-child {
+            border-bottom: 1px solid #e2e2e2;
+        }
+        #modalDelete .modal-content {
+            min-width: auto;
+            min-height: auto;
+        }
+        #modalEdit .modal-content {
+            overflow-y: scroll !important;
+            min-width: 700px;
+            height: 900px;
+        }
+        #modalEdit .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+        .mainModal-div-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .mainModal-div-wrapper > div {
+            text-align: center;
+            width: 100%;
+        }
+        .warning-img>img {
+            /* width: 84px; */
+            width: 88px;
+            height: 88px;
+        }
+        .warning-img>p {
+            margin: 50px;
+        }
+        .warning-but-cont button {
+            color: white;
+            width: 165px;
+            height: 42px;
+            border: none;
+        }
+        .warning-but-cont button:first-child {
+            background: #231f20;
+            border: 1px solid #231f20;
+        }
+        .warning-but-cont button:first-child:hover {
+            background: #01b901 !important;
+            border: 1px solid #01b901 !important;
+        }
+        .warning-but-cont button:last-child {
+            background-color: #ff595d;
+            border-color: #ff595d;
+        }
+        .form1-companysignup {
+            max-width: 100%;
+            padding-bottom: 5em;
+        }
