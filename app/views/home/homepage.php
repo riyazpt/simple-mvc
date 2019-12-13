@@ -32,7 +32,13 @@ $publicFolder= BASE_URL.'/index_files/';
             
         </div>
     </div>
-
+  <div class="row ">
+        <div class="col-md-4 col-md-offset-6">
+          
+            <a href="<?php echo BASE_URL;?>home/saveUser" > <div class=" text-center">User </div></a>
+            
+        </div>
+    </div>
 
     <script>
         

@@ -102,6 +102,20 @@ public function execute_selectquery($sql, $param = array()){
          $stmt->execute();
        
     }
+    
+     public function execute_save_query($sql, $param ){
+         
+         $statement = $this->con->prepare($sql);
+       // echo $sql;die;
+      // print_r($param);die;
+$statement->execute($param);
+//        $statement->execute([
+//    'user_name' => 'Bob',
+//    'password' => 'Desaunois',
+//   
+//]);
+//        
+     }
 }
 
 ?>

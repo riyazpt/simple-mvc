@@ -55,7 +55,22 @@ class Home extends Controller {
        $companyAssociateAray= $companyModal->editCompanyDetails($postedData);
       echo  json_encode($companyAssociateAray);
     }
-
+    
+     public function saveUser () {
+        
+      $this->view('home/user');
+           
+    }
+ public function postUser () {
+        
+       $postedData = $_POST;
+      
+       $userModal=$this->model('User');
+       
+       
+      $userModal->saveUserDetailsToDB($postedData);
+           
+    }
 }
 
 ?>
